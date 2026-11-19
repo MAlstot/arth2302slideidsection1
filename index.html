@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARTH 2302 Slide ID Practice</title>
+<style>
+  :root{
+    --accent:#7A5418; --tint:#F6ECD9; --ink:#1f1f1f; --muted:#555; --line:#d8d2c8;
+    --ok:#1e6b3a; --ok-bg:#e3f2e8; --bad:#a3231f; --bad-bg:#fbe5e4;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:16px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.45}
+  .sid{max-width:900px;margin:0 auto}
+  .banner{background:var(--accent);color:#fff;border-radius:10px 10px 0 0;padding:14px 18px}
+  .banner h1{margin:0;font-size:1.3rem}
+  .banner p{margin:4px 0 0;font-size:.95rem}
+  .panel{border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;padding:16px 18px}
+  .controls{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;margin-bottom:14px}
+  fieldset{border:0;margin:0;padding:0}
+  legend,.lbl{font-weight:600;font-size:.9rem;margin-bottom:4px;display:block;padding:0}
+  .weeks{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--tint);font-size:.9rem;cursor:pointer}
+  .chip input{margin:0;accent-color:var(--accent)}
+  select{font:inherit;padding:5px 8px;border:1px solid #8a8a8a;border-radius:6px}
+  .tabs{display:flex;gap:6px;margin-bottom:14px;border-bottom:2px solid var(--line)}
+  .tab{font:inherit;font-weight:600;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:8px 14px;cursor:pointer;color:var(--muted)}
+  .tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+  button{font:inherit}
+  .btn{background:var(--accent);color:#fff;border:2px solid var(--accent);border-radius:6px;padding:7px 14px;cursor:pointer;font-weight:600}
+  .btn.secondary{background:#fff;color:var(--accent)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  :focus-visible{outline:3px solid #154734;outline-offset:2px}
+  .status{font-size:.9rem;color:var(--muted);margin:0 0 8px}
+  .figure{background:#f4f2ee;border:1px solid var(--line);border-radius:8px;display:flex;justify-content:center;align-items:center;min-height:260px;padding:8px;position:relative}
+  .figure img{max-width:100%;max-height:440px;display:block;cursor:zoom-in}
+  .noimg{color:var(--muted);padding:40px;text-align:center}
+  .zoom{position:absolute;right:8px;bottom:8px;background:#fff;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:3px 9px;font-size:.85rem;cursor:pointer}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+  .answer{margin-top:12px;background:var(--tint);border-left:5px solid var(--accent);border-radius:6px;padding:10px 14px}
+  .answer dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:0}
+  .answer dt{font-weight:700}
+  .answer dd{margin:0}
+  .q{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
+  .q legend{font-size:.95rem}
+  .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px;margin-top:4px}
+  .opt{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:flex-start;border:1px solid var(--line);border-radius:6px;padding:6px 8px;cursor:pointer;background:#fff}
+  .opt input{margin-top:3px;accent-color:var(--accent)}
+  .opt > span:not(.mark){flex:1 1 0;min-width:0}
+  .opt.correct{background:var(--ok-bg);border-color:var(--ok)}
+  .opt.wrong{background:var(--bad-bg);border-color:var(--bad)}
+  .mark{font-weight:700;font-size:.85rem;flex-basis:100%;padding-left:22px}
+  .mark:empty{display:none}
+  .given{margin:4px 0 0;font-size:.95rem}
+  .correct .mark{color:var(--ok)} .wrong .mark{color:var(--bad)}
+  .timer{font-weight:700;color:var(--accent)}
+  .summary h2{margin:0 0 6px;font-size:1.15rem}
+  .summary ul{margin:6px 0 0;padding-left:20px}
+  .hidden{display:none !important}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  dialog{border:0;border-radius:10px;padding:10px;max-width:96vw;max-height:94vh}
+  dialog::backdrop{background:rgba(0,0,0,.75)}
+  dialog img{max-width:92vw;max-height:84vh;display:block}
+  footer{font-size:.8rem;color:var(--muted);margin-top:12px}
+</style>
+</head>
+<body>
+<div class="sid" id="app">
+  <header class="banner">
+    <h1 id="title">ARTH 2302 Slide ID Practice</h1>
+    <p id="subtitle"></p>
+  </header>
+  <div class="panel">
+    <div class="controls">
+      <fieldset>
+        <legend>Weeks to practice</legend>
+        <div class="weeks" id="weeks"></div>
+      </fieldset>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Practice mode">
+      <button class="tab" role="tab" id="tab-cards" aria-controls="cards" aria-selected="true">Flashcards</button>
+      <button class="tab" role="tab" id="tab-quiz" aria-controls="quiz" aria-selected="false" tabindex="-1">Practice Quiz</button>
+    </div>
+
+    <!-- FLASHCARDS -->
+    <section id="cards" role="tabpanel" aria-labelledby="tab-cards">
+      <p class="status" id="cardStatus" aria-live="polite"></p>
+      <div class="figure" id="cardFig"></div>
+      <div class="answer hidden" id="cardAnswer"></div>
+      <div class="row">
+        <button class="btn secondary" id="prevCard">Previous</button>
+        <button class="btn" id="flipCard" aria-expanded="false" aria-controls="cardAnswer">Show answer</button>
+        <button class="btn secondary" id="nextCard">Next</button>
+        <button class="btn secondary" id="shuffleCards">Shuffle</button>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" role="tabpanel" aria-labelledby="tab-quiz" class="hidden">
+      <div id="quizStart">
+        <p>Each image asks the same five questions as the in-class Slide ID quiz: artist, title, date, original location, and style. The image is shown once; answer all five, then check.</p>
+        <div class="controls">
+          <div>
+            <label class="lbl" for="qCount">Number of images</label>
+            <select id="qCount"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option><option value="all">All selected</option></select>
+          </div>
+          <div>
+            <label class="lbl" for="qTime">Time per image</label>
+            <select id="qTime"><option value="0" selected>Untimed</option><option value="60">60 seconds</option><option value="90">90 seconds</option><option value="120">2 minutes</option></select>
+          </div>
+          <button class="btn" id="startQuiz">Start quiz</button>
+        </div>
+      </div>
+      <div id="quizRun" class="hidden">
+        <p class="status"><span id="qProgress"></span> <span class="timer" id="qTimer" aria-live="off"></span></p>
+        <div class="figure" id="quizFig"></div>
+        <form id="qForm"></form>
+        <p id="qFeedback" class="status" aria-live="polite"></p>
+        <div class="row">
+          <button class="btn" id="checkQ">Check answers</button>
+          <button class="btn hidden" id="nextQ">Next image</button>
+        </div>
+      </div>
+      <div id="quizEnd" class="summary hidden" tabindex="-1"></div>
+    </section>
+    <footer>Practice only. Scores are not recorded or sent to Canvas. Identification information matches the course Slide ID sheet.</footer>
+  </div>
+</div>
+
+<dialog id="zoomDlg" aria-label="Enlarged image">
+  <img id="zoomImg" alt="">
+  <div class="row"><button class="btn" id="zoomClose">Close</button></div>
+</dialog>
+
+<script src="data.js"></script>
+<script>
+(function(){
+  var C = window.CONFIG, ALL = window.WORKS;
+  var FIELDS = [
+    ['artist','Artist(s)'],
+    ['title','Title or name of the work'],
+    ['date','Date'],
+    ['location','Original location (region/country)'],
+    ['style','Style']
+  ];
+  var $ = function(id){return document.getElementById(id);};
+  document.documentElement.style.setProperty('--accent', C.accent);
+  document.documentElement.style.setProperty('--tint', C.tint);
+  $('title').textContent = C.title;
+  $('subtitle').textContent = C.subtitle;
+  document.title = C.title;
+
+  /* ---------- week filter ---------- */
+  var weeks = [];
+  ALL.forEach(function(w){ if(weeks.indexOf(w.week)<0) weeks.push(w.week); });
+  weeks.sort(function(a,b){return a-b;});
+  var wbox = $('weeks');
+  weeks.forEach(function(wk){
+    var n = ALL.filter(function(w){return w.week===wk;}).length;
+    var lab = document.createElement('label'); lab.className='chip';
+    lab.innerHTML = '<input type="checkbox" value="'+wk+'" checked> Week '+wk+' ('+n+')';
+    wbox.appendChild(lab);
+  });
+  function pool(){
+    var on = [].slice.call(wbox.querySelectorAll('input:checked')).map(function(i){return +i.value;});
+    return ALL.filter(function(w){return on.indexOf(w.week)>=0;});
+  }
+  function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function renderFig(box, w, alt){
+    if(w.img){
+      box.innerHTML = '<img src="'+w.img+'" alt="'+esc(alt)+'"><button type="button" class="zoom">Enlarge</button>';
+      var open = function(){ $('zoomImg').src=w.img; $('zoomImg').alt=alt; $('zoomDlg').showModal(); };
+      box.querySelector('img').addEventListener('click', open);
+      box.querySelector('.zoom').addEventListener('click', open);
+      box.querySelector('img').addEventListener('load', function(){ setTimeout(sendHeight,40); });
+    } else {
+      box.innerHTML = '<p class="noimg">Image to be added (figure '+esc(w.fig)+').</p>';
+    }
+  }
+  $('zoomClose').addEventListener('click', function(){ $('zoomDlg').close(); });
+
+  /* ---------- tabs ---------- */
+  var tabs = [$('tab-cards'),$('tab-quiz')];
+  function selectTab(t){
+    tabs.forEach(function(x){
+      var on = x===t; x.setAttribute('aria-selected',on); x.tabIndex = on?0:-1;
+      $(x.getAttribute('aria-controls')).classList.toggle('hidden',!on);
+    });
+    setTimeout(sendHeight,60);
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){selectTab(t);});
+    t.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ var n=tabs[(i+1)%2]; selectTab(n); n.focus(); e.preventDefault(); }
+    });
+  });
+
+  /* ---------- flashcards ---------- */
+  var deck=[], ci=0, shown=false;
+  function buildDeck(doShuffle){ deck = doShuffle ? shuffle(pool()) : pool(); ci=0; renderCard(); }
+  function renderCard(){
+    shown=false;
+    $('cardAnswer').classList.add('hidden');
+    $('flipCard').textContent='Show answer'; $('flipCard').setAttribute('aria-expanded','false');
+    if(!deck.length){
+      $('cardStatus').textContent='Select at least one week.'; $('cardFig').innerHTML='';
+      ['prevCard','nextCard','flipCard'].forEach(function(id){$(id).disabled=true;}); setTimeout(sendHeight,40); return;
+    }
+    ['prevCard','nextCard','flipCard'].forEach(function(id){$(id).disabled=false;});
+    var w = deck[ci];
+    $('cardStatus').textContent = 'Card '+(ci+1)+' of '+deck.length+' (Week '+w.week+')';
+    renderFig($('cardFig'), w, 'Slide ID practice image, card '+(ci+1)+'. Identify this work.');
+    $('cardAnswer').innerHTML = '<dl>'+FIELDS.map(function(f){return '<dt>'+f[1]+'</dt><dd>'+esc(w[f[0]])+'</dd>';}).join('')+'<dt>Figure</dt><dd>'+esc(w.fig)+'</dd></dl>';
+    $('prevCard').disabled = ci===0; $('nextCard').disabled = ci===deck.length-1;
+    setTimeout(sendHeight,60);
+  }
+  $('flipCard').addEventListener('click',function(){
+    shown=!shown;
+    $('cardAnswer').classList.toggle('hidden',!shown);
+    this.textContent = shown?'Hide answer':'Show answer';
+    this.setAttribute('aria-expanded',shown);
+    var img=$('cardFig').querySelector('img'); if(img&&shown) img.alt = deck[ci].title;
+    setTimeout(sendHeight,40);
+  });
+  $('prevCard').addEventListener('click',function(){ if(ci>0){ci--;renderCard();} });
+  $('nextCard').addEventListener('click',function(){ if(ci<deck.length-1){ci++;renderCard();} });
+  $('shuffleCards').addEventListener('click',function(){ buildDeck(true); });
+  wbox.addEventListener('change',function(){ buildDeck(false); });
+
+  /* ---------- quiz ---------- */
+  var qs=[], qi=0, score=0, missed=[], timer=null, left=0, checked=false;
+  function optionsFor(w, key){
+    var correct = w[key];
+    var others = [];
+    ALL.forEach(function(x){ var v=x[key]; if(v && v!==correct && others.indexOf(v)<0) others.push(v); });
+    var opts = shuffle(others).slice(0,3); opts.push(correct);
+    return shuffle(opts);
+  }
+  $('startQuiz').addEventListener('click',function(){
+    var p = shuffle(pool());
+    if(!p.length){ alert('Select at least one week.'); return; }
+    var n = $('qCount').value; qs = n==='all'? p : p.slice(0, +n);
+    qi=0; score=0; missed=[];
+    $('quizStart').classList.add('hidden'); $('quizEnd').classList.add('hidden'); $('quizRun').classList.remove('hidden');
+    renderQ();
+  });
+  function renderQ(){
+    checked=false;
+    var w = qs[qi];
+    $('qProgress').textContent = 'Image '+(qi+1)+' of '+qs.length+'.';
+    renderFig($('quizFig'), w, 'Slide ID practice image '+(qi+1)+'. Answer the five questions below.');
+    var html='';
+    FIELDS.forEach(function(f,fi){
+      var opts = optionsFor(w,f[0]);
+      if(opts.length<2){ /* no other values to choose from (e.g. every artist in this section is Unknown) */
+        html += '<div class="q" data-given="1"><p class="lbl">'+(fi+1)+'. '+f[1]+'</p><p class="given">'+esc(w[f[0]])+' (given: every work in this section has the same answer)</p></div>';
+        return;
+      }
+      html += '<fieldset class="q"><legend>'+(fi+1)+'. '+f[1]+'</legend><div class="opts">'+
+        opts.map(function(o,oi){
+          var id='q'+fi+'o'+oi;
+          return '<label class="opt" for="'+id+'"><input type="radio" id="'+id+'" name="f'+fi+'" value="'+esc(o)+'"> <span>'+esc(o)+'</span><span class="mark"></span></label>';
+        }).join('')+'</div></fieldset>';
+    });
+    $('qForm').innerHTML = html;
+    $('qFeedback').textContent='';
+    $('checkQ').classList.remove('hidden'); $('nextQ').classList.add('hidden');
+    startTimer();
+    setTimeout(sendHeight,60);
+  }
+  function startTimer(){
+    clearInterval(timer); left = +$('qTime').value;
+    if(!left){ $('qTimer').textContent=''; return; }
+    $('qTimer').textContent = left+'s left';
+    timer = setInterval(function(){
+      left--; $('qTimer').textContent = left+'s left';
+      if(left<=10) $('qTimer').setAttribute('aria-live','polite');
+      if(left<=0){ clearInterval(timer); $('qTimer').textContent='Time is up.'; check(); }
+    },1000);
+  }
+  function check(){
+    if(checked) return; checked=true; clearInterval(timer);
+    var w = qs[qi], right=0, wrongFields=[];
+    FIELDS.forEach(function(f,fi){
+      var set = $('qForm').querySelectorAll('input[name="f'+fi+'"]');
+      if(!set.length){ right++; return; }
+      var picked = $('qForm').querySelector('input[name="f'+fi+'"]:checked');
+      [].forEach.call(set,function(inp){
+        inp.disabled=true;
+        var lab = inp.parentNode, mk = lab.querySelector('.mark');
+        if(inp.value===w[f[0]]){ lab.classList.add('correct'); mk.textContent='Correct answer'; }
+        else if(picked===inp){ lab.classList.add('wrong'); mk.textContent='Your answer'; }
+      });
+      if(picked && picked.value===w[f[0]]) right++; else wrongFields.push(f[1]);
+    });
+    score += right;
+    if(right<5) missed.push({w:w, fields:wrongFields});
+    var img=$('quizFig').querySelector('img'); if(img) img.alt = w.title;
+    $('qFeedback').textContent = right+' of 5 correct for '+w.title+'.';
+    $('checkQ').classList.add('hidden'); $('nextQ').classList.remove('hidden');
+    $('nextQ').textContent = qi<qs.length-1 ? 'Next image' : 'See results';
+    $('nextQ').focus();
+    setTimeout(sendHeight,60);
+  }
+  $('checkQ').addEventListener('click',function(e){ e.preventDefault(); check(); });
+  $('nextQ').addEventListener('click',function(){
+    if(qi<qs.length-1){ qi++; renderQ(); var first=$('qForm').querySelector('input'); if(first) first.focus(); }
+    else finish();
+  });
+  function finish(){
+    $('quizRun').classList.add('hidden');
+    var total = qs.length*5, pct = Math.round(score/total*100);
+    var html = '<h2>Your score: '+score+' of '+total+' ('+pct+'%)</h2>';
+    if(missed.length){
+      html += '<p>Works to review:</p><ul>'+missed.map(function(m){return '<li><strong>'+esc(m.w.title)+'</strong> (Week '+m.w.week+'): missed '+esc(m.fields.join(', '))+'</li>';}).join('')+'</ul>';
+    } else html += '<p>All correct. Try the timed setting next.</p>';
+    html += '<div class="row"><button class="btn" id="again">Practice again</button></div>';
+    var end=$('quizEnd'); end.innerHTML=html; end.classList.remove('hidden'); end.focus();
+    $('again').addEventListener('click',function(){ end.classList.add('hidden'); $('quizStart').classList.remove('hidden'); setTimeout(sendHeight,60); });
+    setTimeout(sendHeight,60);
+  }
+
+  buildDeck(false);
+
+  /* --- Canvas iframe auto-resize (correct pattern) ---
+     Measures the widget wrapper, NOT scrollHeight. PAD = body padding top + bottom. */
+  var lastH = 0, PAD = 32;
+  function sendHeight(){
+    try{
+      var el = document.querySelector('.sid');
+      var h = (el ? el.offsetHeight : document.body.offsetHeight) + PAD;
+      if (Math.abs(h - lastH) < 4) return;
+      lastH = h;
+      var msg = {subject:'lti.frameResize', height:h};
+      window.parent.postMessage(msg,'*');
+      window.parent.postMessage(JSON.stringify(msg),'*');
+    }catch(e){}
+  }
+  window.sendHeight = sendHeight;
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  if(window.ResizeObserver){ new ResizeObserver(sendHeight).observe(document.querySelector('.sid')); }
+})();
+</script>
+</body>
+</html>
